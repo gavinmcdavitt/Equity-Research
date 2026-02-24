@@ -1,0 +1,34 @@
+Start (main.py Orchestrator)
+|
+|-- Fetch S&P 500 Tickers (sp500_fetcher.py) --> List of tickers
+|   - Source: Browse Wikipedia table via requests + BeautifulSoup
+|
+|-- Map Tickers to CIKs (cik_mapper.py) --> Dict[ticker: cik]
+|   - Source: GET https://www.sec.gov/files/company_tickers.json
+|   - Store in companies table (db_repo.py)
+|
+|-- For each Ticker/CIK (batched):
+|   |
+|   |-- Fetch EDGAR Metadata (edgar_metadata_fetcher.py)
+|   |   - GET https://data.sec.gov/submissions/CIK<10-digit-padded>.json
+|   |   - Filter recentFilings for form in ['10-K', '10-Q', '10-K/A', '10-Q/A'], reportDate >= 2010
+|   |   - Handle amended: Include as separate entries (e.g., 10-K/A)
+|   |   - Detect missing: Generate expected years/quarters (2010-now), compare to fetched
+|   |   - Store metadata in filings table (if not exists)
+|   |
+|   |-- Download Raw Filings (filing_downloader.py, rate-limited)
+|   |   - For each metadata entry (if not downloaded):
+|   |     - URL: https://www.sec.gov/Archives/edgar/data/<CIK>/<accession-no-dashes>/<primary-doc>.html
+|   |     - Save to data/raw_filings/<TICKER>/<year>_<type>[_Q<q>][_A].html
+|   |     - Update download_status in DB
+|   |
+|   |-- Fetch Prices (price_fetcher.py)
+|       - Use yfinance.download(ticker, start='2010-01-01', end=today)
+|       - Save to data/price_data/<TICKER>.csv (overwrite if newer data)
+|       - Update price_metadata table
+|
+|-- Validate Downloads (validator.py) --> Check sizes, content starts with <html>, update validation_status
+|
+|-- Log Completion/Errors (logger.py)
+|
+End

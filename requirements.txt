@@ -1,0 +1,9 @@
+requests
+beautifulsoup4
+yfinance
+sqlalchemy
+psycopg2-binary
+tenacity
+ratelimit  # For rate limiting, or implement manually
+pyyaml
+tqdm  # For progress bars

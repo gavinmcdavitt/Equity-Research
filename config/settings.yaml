@@ -1,0 +1,25 @@
+database:
+  uri: postgresql://postgres:postgres@localhost:5432/equity_research_db  # Replace with actual credentials
+
+paths:
+  data_dir: ./data
+  raw_filings_dir: raw_filings
+  price_data_dir: price_data
+  logs_dir: ./logs
+
+sec:
+  user_agent: 'EquityResearchPipeline John David Haggmund JDHaggmund@gmail.com'  # Required by SEC
+  rate_limit_seconds: 0.1  # 10 requests per second
+  retry_attempts: 3
+  retry_min_wait: 4
+  retry_max_wait: 10
+
+pipeline:
+  start_year: 2010
+  batch_size: 50
+
+logging:
+  level: INFO
+  file: pipeline.log
+  rotate_when: midnight
+  rotate_backup_count: 7

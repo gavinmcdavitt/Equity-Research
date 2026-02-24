@@ -1,0 +1,7 @@
+# Ignore the contents of the two data subdirectories
+data/raw_filings/*
+data/price_data/*
+
+# Keep the folders themselves
+!data/raw_filings/.gitkeep
+!data/price_data/.gitkeep
